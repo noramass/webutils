@@ -1,0 +1,37 @@
+{
+  "name": "@norabelle-labs/focus",
+  "description": "",
+  "version": "0.0.0",
+  "author": "Nora Belle Reichwald <nora@reichwald.me> (https://norabelle.dev/)",
+  "license": "MIT",
+  "keywords": [],
+  "since": 2024,
+
+  "scripts": {
+    "build": "tsup",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
+
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "entry": "./src/index.ts"
+    }
+  },
+
+  "dependencies": {},
+
+  "devDependencies": {
+    "eslint": "*",
+    "jest": "*",
+    "tsup": "*"
+  },
+
+  "publishConfig": {
+    "access": "public"
+  }
+}
