@@ -39,8 +39,11 @@ let recover = Focus.select(document.querySelector("#my-input"))
 recover()
 
 // Move focus inside a container element (last element steps to first and vice versa)
-Focus.step(1, document.querySelector("#my-popover"))
-Focus.step(-1, document.querySelector("#my-popover"))
+Focus.step(1, document.querySelector("#my-form"))
+Focus.step(-1, document.querySelector("#my-form"))
+
+// Move focus to the first element before the form
+Focus.stepOutOf(document.querySelector("#my-form"), -1)
 
 // Select a given element in a container by index (default first element)
 recover = Focus.stepInto(document.querySelector("#my-popover"), 2)
