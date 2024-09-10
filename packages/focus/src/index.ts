@@ -35,7 +35,7 @@ export class Focus {
   static get selector() {
     if (this._selector) return this._selector;
     const excluded = this.excluded.map(it => `:not(${it})`).join("");
-    return this.candidates.map(it => it + excluded).join(",");
+    return (this._selector = this.candidates.map(it => it + excluded).join(","));
   }
 
   /**
