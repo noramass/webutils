@@ -31,6 +31,7 @@ export class Focus {
   /**
    * a selector for focusable dom elements for use with {@link Element#querySelector}.
    * it excludes elements that are disabled, readonly or have negative tabindex values.
+   * @remarks cached after initial use.
    */
   static get selector() {
     if (this._selector) return this._selector;
@@ -85,8 +86,8 @@ export class Focus {
    * @remarks if no index is passed, the first element will be selected. indexes wrap around at the
    * 					bounds of the container, meaning -1 selects the last element.
    *
-   * @param container
-   * @param index
+   * @param container The container to select an element inside of
+   * @param index The index of the element to select inside of the container. Negative values select from the end.
    * @param options The options passed to {@link Element#focus}
    * @return a function to restore focus to the element that was active previously
    */
@@ -119,6 +120,40 @@ export class Focus {
   }
 
   /**
+   * Step an amount of steps outside of a given element or container.
+   * Useful to, for example, step in front of or behind a form.
+   *
+   * Internally calls {@link Element#focus} on the element to transfer focus.
+   *
+   * @remarks throws an error when either the <code>elementOrContainer</code> or <code>container</code> parameters are
+   *          not focusable or do not container focusable elements, or when <code>container</code> does not contain
+   *          <code>elementOrContainer</code>.
+   *
+   * @param elementOrContainer the element or container to step out of
+   * @param steps the amount of steps ("tab" presses) to apply. negative values step backwards.
+   * @param container The encapsulating container to step inside of, defaults to {@link document.body}
+   * @param options The options passed to {@link Element#focus}
+   * @return a function to restore focus to the element that was active previously
+   */
+  static stepOutOf(
+    elementOrContainer: HTMLElement,
+    steps = 1,
+    container?: HTMLElement,
+    options?: FocusOptions,
+  ): FocusFn {
+    const inside = this.getFocusableElements(elementOrContainer);
+    const outside = this.getFocusableElements(container);
+    if (!inside.length)
+      throw new RangeError("elementOrContainer is not focusable or does not contain focusable elements");
+    if (!outside.length)
+      throw new RangeError("container element is not focusable or does not contain focusable elements");
+    const firstIndex = outside.indexOf(inside.at(0)!);
+    if (firstIndex === -1) throw new RangeError("container does not contain element, can't step out of it");
+    outside.splice(firstIndex, inside.length);
+    return Focus.select(cycle(outside, firstIndex + (steps > 0 ? steps - 1 : steps)), options);
+  }
+
+  /**
    * Get a list of focusable html elements contained in a set of containers, sorted by tab order and
    * order of occurrence.
    *
@@ -135,8 +170,8 @@ export class Focus {
         // make sure each container is only included once
         .filter(unique())
         .sort(this._byDomOrder.bind(this))
-        // the selector only allows for focusable html elements
-        .flatMap(container => [...container.querySelectorAll(this.selector)] as HTMLElement[])
+        // extract all focusable elements from containers (including the containers themselves if they are focusable)
+        .flatMap(this._flattenFocusableContainer.bind(this))
         // nested containers return duplicate children, prune them
         .filter(unique())
         // only select visible candidates
@@ -152,6 +187,28 @@ export class Focus {
    */
   static isInside(element: HTMLElement) {
     return element === document.activeElement || element.contains(document.activeElement);
+  }
+
+  /**
+   * Returns true when the element itself is focusable.
+   * @param element the element to check
+   */
+  static isFocusable(element: HTMLElement) {
+    return element.matches(this.selector);
+  }
+
+  /**
+   * Returns true, when at least one descendant of this element is focusable
+   * @param element the element to check through
+   */
+  static hasFocusableChildren(element: HTMLElement) {
+    return element.matches(`:has(${this.selector})`);
+  }
+
+  private static _flattenFocusableContainer(element: HTMLElement): HTMLElement[] {
+    const results = element.querySelectorAll<HTMLElement>(this.selector);
+    if (this.isFocusable(element)) return [element, ...results];
+    return [...results];
   }
 
   private static _byTabOrder(a: HTMLElement, b: HTMLElement) {
