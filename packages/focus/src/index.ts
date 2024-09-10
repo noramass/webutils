@@ -13,7 +13,7 @@ const noop: FocusFn = () => {};
  */
 export class Focus {
   static candidates = [
-    "input:not([type='hidden']):not([hidden]:not([hidden='false']))",
+    "input:not([type='hidden'])",
     "select",
     "textarea",
     "a[href]",
@@ -24,7 +24,12 @@ export class Focus {
     "[contenteditable]:not([contenteditable='false'])",
   ];
 
-  static excluded = ["[disabled]:not([disabled='false'])", "[readonly]:not([readonly='false'])", "[tabindex='-1']"];
+  static excluded = [
+    "[disabled]:not([disabled='false'])",
+    "[readonly]:not([readonly='false'])",
+    "[hidden]:not([hidden='false'])",
+    "[tabindex='-1']",
+  ];
 
   private static _selector: string | undefined;
 
