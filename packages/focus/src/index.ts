@@ -121,6 +121,8 @@ export class Focus {
 
   /**
    * Step an amount of steps outside of a given element or container.
+   * If an element outside the <code>elementOrContainer</code> is already selected, cycles the focus instead of
+   * selecting the element at a given relative index.
    * Useful to, for example, step in front of or behind a form.
    *
    * Internally calls {@link Element#focus} on the element to transfer focus.
@@ -150,6 +152,7 @@ export class Focus {
     const firstIndex = outside.indexOf(inside.at(0)!);
     if (firstIndex === -1) throw new RangeError("container does not contain element, can't step out of it");
     outside.splice(firstIndex, inside.length);
+    if (outside.some(it => document.activeElement === it)) return Focus.stepThrough(outside, steps, options);
     return Focus.select(cycle(outside, firstIndex + (steps > 0 ? steps - 1 : steps)), options);
   }
 
