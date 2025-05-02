@@ -96,6 +96,30 @@ importers:
         specifier: '*'
         version: 8.2.3(@swc/core@1.7.4)(typescript@5.5.4)
 
+  packages/mouse:
+    devDependencies:
+      eslint:
+        specifier: '*'
+        version: 9.9.1
+      jest:
+        specifier: '*'
+        version: 29.7.0(@types/node@20.14.13)
+      tsup:
+        specifier: '*'
+        version: 8.2.3(@swc/core@1.7.4)(typescript@5.5.4)
+
+  packages/util:
+    devDependencies:
+      eslint:
+        specifier: '*'
+        version: 9.9.1
+      jest:
+        specifier: '*'
+        version: 29.7.0(@types/node@20.14.13)
+      tsup:
+        specifier: '*'
+        version: 8.2.3(@swc/core@1.7.4)(typescript@5.5.4)
+
 packages:
 
   '@ampproject/remapping@2.3.0':
