@@ -1,10 +1,10 @@
 import type { Tagged } from "./tagged";
 
-type Enum<T, Tag = never> = {
+export type Enum<T, Tag = never> = {
   [K in keyof T]: Tagged<T[K], Tag>;
 } & EnumFunctions<T, Tag>;
 
-interface EnumFunctions<T, Tag> {
+export interface EnumFunctions<T, Tag> {
   values(): Tagged<T[keyof T], Tag>;
   keyOf<V>(value: V): LookupKeyType<T, V>;
   [Symbol.iterator](): IterableIterator<T[keyof T]>;
